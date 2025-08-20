@@ -1,7 +1,16 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="refresh" content="0; url=/portfolio/" />
+    <meta charset="UTF-8" />
+    <title>Redirecting...</title>
+    <script type="text/javascript">
+      // Get the path after the repo name
+      var path = window.location.pathname;
+      var repo = '/portfolio'; // <-- your repo name
+      var relativePath = path.startsWith(repo) ? path.slice(repo.length) : '';
+      // Redirect to index.html and preserve path for React Router
+      window.location.replace(repo + '/index.html#' + relativePath);
+    </script>
   </head>
   <body></body>
 </html>
