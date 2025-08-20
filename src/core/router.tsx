@@ -1,21 +1,21 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter } from 'react-router-dom';
 import Layout from '../layouts/Layout';
 import Home from '../pages/Home';
-import Projects from '../pages/Projects';
-import Contact from '../pages/Contact';
+import Competence1 from '../pages/Competence1';
+import Competence2 from '../pages/Competence2';
+import Competence6 from '../pages/Competence6';
 
 const router = createBrowserRouter([
   {
-    path: '/portfolio',
+    path: '/portfolio/',
     element: <Layout />,
     children: [
-      { path: 'portfolio/', element: <Home /> },
-      { path: 'portfolio/projects', element: <Projects /> },
-      { path: 'portfolio/contact', element: <Contact /> },
+      { path: '', element: <Home /> },
+      { path: 'competence1', element: <Competence1 /> },
+      { path: 'competence2', element: <Competence2 /> },
+      { path: 'competence6', element: <Competence6 /> },
     ],
   },
 ]);
 
-export const AppRouterProvider = () => (
-  <RouterProvider router={router} />
-);
+export default router;
