@@ -90,7 +90,7 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="w-full flex flex-col justify-center min-h-[40vh] px-4 md:px-8 lg:px-24" id="projets-area">
+      {/* <section className="w-full flex flex-col justify-center min-h-[40vh] px-4 md:px-8 lg:px-24" id="projets-area">
         <h2 className="text-3xl md:text-4xl font-extrabold mb-8 text-left text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-300 to-green-400 drop-shadow-[0_0_12px_rgba(34,211,238,0.25)] w-fit">Projets</h2>
         <div className="flex flex-col gap-8 justify-center items-stretch w-full">
           <button className="w-full p-8 rounded-2xl font-semibold shadow-lg transition flex flex-col items-start bg-gray-800/60 text-white backdrop-blur-xl border border-gray-800 hover:bg-gradient-to-r hover:from-blue-400 hover:via-cyan-300 hover:to-green-300 hover:text-gray-900 hover:shadow-[0_0_16px_2px_rgba(34,211,238,0.25)] group">
@@ -98,7 +98,7 @@ const Home = () => {
             <span className="text-base text-white group-hover:text-gray-900 transition">Courte description du projet.</span>
           </button>
         </div>
-      </section>
+      </section> */}
     </>
   );
 }

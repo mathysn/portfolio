@@ -5,7 +5,7 @@ const sectionLinks = [
   { name: "A propos", section: "next-area" },
   { name: "Entreprise", section: "entreprise-area" },
   { name: "Compétences", section: "competences-area" },
-  { name: "Projets", section: "projets-area" },
+  // { name: "Projets", section: "projets-area" },
 ];
 
 const Navbar: React.FC = () => {
