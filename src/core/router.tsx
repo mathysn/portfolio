@@ -6,12 +6,12 @@ import Contact from '../pages/Contact';
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: '/portfolio',
     element: <Layout />,
     children: [
-      { path: '/', element: <Home /> },
-      { path: '/projects', element: <Projects /> },
-      { path: '/contact', element: <Contact /> },
+      { path: 'portfolio/', element: <Home /> },
+      { path: 'portfolio/projects', element: <Projects /> },
+      { path: 'portfolio/contact', element: <Contact /> },
     ],
   },
 ]);

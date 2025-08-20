@@ -2,9 +2,9 @@ import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const navLinks = [
-  { name: "Home", path: "/" },
-  { name: "Projects", path: "/projects" },
-  { name: "Contact", path: "/contact" },
+  { name: "Home", path: "/portfolio/" },
+  { name: "Projects", path: "/portfolio/projects" },
+  { name: "Contact", path: "/portfolio/contact" },
 ];
 
 const Navbar: React.FC = () => {
@@ -13,7 +13,7 @@ const Navbar: React.FC = () => {
   return (
     <nav className="fixed top-0 left-0 w-full z-50 flex justify-center pointer-events-none">
       <div className="pointer-events-auto w-[700px] md:w-[900px] lg:w-[1100px] mx-auto mt-4 rounded-2xl backdrop-blur-xl bg-gray-900/80 border border-gray-800 shadow-2xl flex items-center justify-between px-10 py-4">
-        <div onClick={() => navigate('/')} className="text-2xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-green-400 cursor-pointer">Your Name</div>
+        <div onClick={() => navigate('/portfolio/')} className="text-2xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-green-400 cursor-pointer">Your Name</div>
         <div className="flex space-x-6">
           {navLinks.map(link => {
             const isActive = location.pathname === link.path;
