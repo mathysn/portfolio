@@ -71,21 +71,18 @@ const Home = () => {
             onClick={() => window.location.href = '/portfolio/competence1'}
           >
             <span className="text-2xl font-bold mb-2 text-white group-hover:text-gray-900 transition">Compétence 1 - Réaliser un développement d'application</span>
-            <span className="text-base text-white group-hover:text-gray-900 transition">Description courte de la compétence 1.</span>
           </button>
           <button
             className="w-full p-8 rounded-2xl font-semibold shadow-lg transition flex flex-col items-start bg-gray-800/60 text-white backdrop-blur-xl border border-gray-800 hover:bg-gradient-to-r hover:from-blue-400 hover:via-cyan-300 hover:to-green-300 hover:text-gray-900 hover:shadow-[0_0_16px_2px_rgba(34,211,238,0.25)] group"
             onClick={() => window.location.href = '/portfolio/competence2'}
           >
             <span className="text-2xl font-bold mb-2 text-white group-hover:text-gray-900 transition">Compétence 2 - Optimiser des applications</span>
-            <span className="text-base text-white group-hover:text-gray-900 transition">Description courte de la compétence 2.</span>
           </button>
           <button
             className="w-full p-8 rounded-2xl font-semibold shadow-lg transition flex flex-col items-start bg-gray-800/60 text-white backdrop-blur-xl border border-gray-800 hover:bg-gradient-to-r hover:from-blue-400 hover:via-cyan-300 hover:to-green-300 hover:text-gray-900 hover:shadow-[0_0_16px_2px_rgba(34,211,238,0.25)] group"
             onClick={() => window.location.href = '/portfolio/competence6'}
           >
             <span className="text-2xl font-bold mb-2 text-white group-hover:text-gray-900 transition">Compétence 6 - Collaborer au sein d'une équipe informatique</span>
-            <span className="text-base text-white group-hover:text-gray-900 transition">Description courte de la compétence 6.</span>
           </button>
         </div>
       </section>
