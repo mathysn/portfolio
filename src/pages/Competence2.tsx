@@ -6,7 +6,7 @@ const Competence2: React.FC = () => {
   const [markdown, setMarkdown] = useState('');
 
   useEffect(() => {
-    fetch('/portfolio/src/content/competence2.md')
+    fetch('/portfolio/competence2.md')
       .then(res => res.text())
       .then(setMarkdown);
   }, []);
