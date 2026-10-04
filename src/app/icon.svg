@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="fill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8FF3B8" />
+      <stop offset="0.55" stop-color="#56D68D" />
+      <stop offset="1" stop-color="#3FC47A" />
+    </linearGradient>
+  </defs>
+  <circle cx="32" cy="32" r="32" fill="url(#fill)" />
+  <!-- "M" drawn as a path (not text): crisp at 16px and identical on every system. -->
+  <path
+    d="M19 45V19l13 15 13-15v26"
+    fill="none"
+    stroke="#03130A"
+    stroke-width="5"
+    stroke-linecap="square"
+    stroke-linejoin="miter"
+  />
+</svg>

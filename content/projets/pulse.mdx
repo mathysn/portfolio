@@ -1,0 +1,18 @@
+---
+title: Pulse
+summary: "Monitoring d'uptime avec alertes Slack et pages de statut publiques."
+category: API
+kind: [api]
+featured: false
+year: 2025
+role: Projet personnel
+period: "2025"
+stack: [Node.js, Redis]
+repo: github.com/camille/pulse
+---
+
+## Le projet
+
+Pulse interroge des endpoints HTTP à intervalle régulier, conserve l'historique dans Redis et publie une page de statut publique par projet.
+
+<Callout type="info" title="Bon à savoir">Une alerte n'est envoyée qu'après trois échecs consécutifs, pour éviter les faux positifs.</Callout>

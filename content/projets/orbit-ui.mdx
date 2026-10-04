@@ -1,0 +1,53 @@
+---
+title: Orbit UI
+summary: "Bibliothèque de composants React accessibles, documentée avec Storybook et utilisée par une dizaine d'équipes produit."
+category: Open source · Design system
+kind: [oss, web]
+featured: true
+year: 2023
+role: Créateur & mainteneur
+period: 2023 — auj.
+team: 2 mainteneurs · 30 contributeurs
+stack: [TypeScript, React, Radix, Storybook]
+metrics:
+  - { label: Étoiles, value: "1,8 k" }
+  - { label: Composants, value: "60+" }
+demo: https://orbit-ui.dev
+demoLabel: Docs
+repo: github.com/camille/orbit-ui
+---
+
+## Le contexte
+
+Chaque équipe produit réimplémentait ses boutons, ses modales et ses menus, avec des niveaux d'accessibilité très variables. Orbit UI fournit une base commune, testée et documentée.
+
+## Architecture
+
+Les composants s'appuient sur les primitives Radix pour le comportement (focus, clavier, ARIA) et n'ajoutent que le style et l'API.
+
+<CodeBlock
+  title="src/button/Button.tsx"
+  lang="tsx"
+  highlight="4"
+  code={`export function Button({ variant = "primary", ...props }: ButtonProps) {
+  return (
+    <button
+      data-variant={variant}
+      className={styles.button}
+      {...props}
+    />
+  );
+}`}
+/>
+
+## Résultats
+
+<Stats
+  items={[
+    { value: "60+", label: "composants" },
+    { value: "1,8 k", label: "étoiles GitHub" },
+    { value: "10", label: "équipes utilisatrices" },
+  ]}
+/>
+
+<LinkCard href="https://github.com/camille/orbit-ui" title="camille/orbit-ui" meta="TypeScript" stars={1800} />
