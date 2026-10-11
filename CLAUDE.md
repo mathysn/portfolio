@@ -12,7 +12,7 @@ Portfolio personnel d'un développeur full-stack basé à Lyon (Mathys NOURRY), 
   - pages techniques : 404, `sitemap.xml`, `robots.txt`, favicon `src/app/icon.svg` (cercle vert, « M » tracé).
 - **Stack** : Next.js 16 App Router + Turbopack, React 19, MDX (`@next/mdx`), Tailwind CSS v4 (config CSS-first, pas de `tailwind.config`), TypeScript, pnpm, zod, lucide-react, Resend.
 - **Origine** : un handoff de design (`design_handoff_portfolio/README.md` + maquettes `.dc.html`, à ouvrir dans un navigateur). C'est la référence visuelle. Depuis, le site a évolué sur demande de Mathys : nav sans « Accueil » ni CV, cartes simplifiées, grille chronologique, version mobile.
-- **Contenu** : les 9 projets actuels (Atlas, Relais, Orbit UI…) sont des **placeholders** hérités du design, à remplacer par ses vrais projets. Les nouvelles fiches se génèrent avec `docs/prompt-projet-mdx.md`. Les captures sont des placeholders rayés tant que `cover`/`src` ne sont pas fournis. `public/cv.pdf` n'existe pas encore : les liens CV donnent une 404.
+- **Contenu** : premier vrai projet : `mrveto`. Des 9 projets placeholders hérités du design, il ne reste que `deploy-bot`, à remplacer. Les nouvelles fiches se génèrent avec `docs/prompt-projet-mdx.md`. Une capture reste un placeholder rayé tant que `cover`/`src` n'est pas fourni. `public/cv.pdf` n'existe pas encore : les liens CV donnent une 404.
 
 ## Travailler avec Mathys
 - Il écrit en français : réponds en français. Il veut un **plan** (mode plan) avant les gros changements.
@@ -85,11 +85,13 @@ Thème sombre unique, accent vert, surfaces en verre dépoli au-dessus d'un fond
 ## Données et contenu
 - `src/lib/site.ts` : identité, `brand` de la nav (« mathys.dev », la partie après le dernier point est verte), email, ville, disponibilité, liens GitHub/LinkedIn/CV, `navLinks`.
 - `content/projets/<slug>.mdx` : un projet par fichier, frontmatter validé par zod dans `src/lib/projects.ts` (le build échoue si invalide).
-  - Champs : `title`, `summary`, `category`, `kind` (web|api|mobile|oss, pour le filtre), `featured` (carte sur 2 colonnes avec photo), `year`, `role`, `period`, `team?`, `stack`, `cover?`, `demo?`, `demoLabel?`, `repo?`. `metrics` existe mais n'est plus affiché.
+  - Champs : `title`, `summary`, `category`, `kind` (web|api|mobile|oss, pour le filtre), `featured` (carte sur 2 colonnes avec photo), `year`, `role`, `period`, `team?`, `stack`, `cover?`, `thumbnail?` (image de la carte phare, à défaut `cover`), `demo?`, `demoLabel?`, `repo?`. `metrics` existe mais n'est plus affiché.
   - `getAllProjects()` donne l'ordre du site : année décroissante, projets phares d'abord à année égale.
   - `getHeadings()` doit produire les mêmes ids que `rehype-slug` (même github-slugger).
 - `docs/prompt-projet-mdx.md` : prompt à donner dans un autre repo pour générer la fiche MDX d'un projet.
-- Images : `public/projets/<slug>/…`, référencées en `/projets/<slug>/fichier.png`. Formats : couverture 2400×1200, figures 16:10.
+- Images : `public/projets/<slug>/…`, référencées en `/projets/<slug>/fichier.png`. Formats : couverture 2400×1200, vignette de carte 1600×1000, figures 16:10.
+  - `cover` : le cadre de `ProjectHero` est en 2:1 dès `md` pour l'afficher entière ; il est recadré en 16:10 sur mobile.
+  - `thumbnail` : la carte phare recadre entre 16:10 et 21:9 selon l'écran (`object-cover`), donc le sujet doit tenir dans les 60 % centraux de la hauteur (ex. logo centré sur fond uni).
 
 ## Architecture
 - `src/app/layout.tsx` : polices, métadonnées (titres `%s - Mathys NOURRY`), viewport, et les éléments **persistants** entre les pages : `Background`, `Navbar`, `ScrollThumb`, `RevealGate`. Chaque `page.tsx` enveloppe son contenu dans `<PageTransition>` (React `<ViewTransition>` : fondu entre pages).
@@ -150,6 +152,7 @@ Thème sombre unique, accent vert, surfaces en verre dépoli au-dessus d'un fond
 - Nav : même pill à toutes les tailles, masquée sur `/`, se cache au scroll vers le bas sous `lg`.
 - Projets :
   - grille unique chronologique, cartes phares sur 2 colonnes (`grid-flow-row-dense`) ;
+  - hauteur des cartes : dès `md`, le résumé est coupé à 2 lignes (`md:line-clamp-2`) pour que toutes les rangées fassent la même hauteur (252px avec une carte phare). Le contenu d'une carte remplit toute sa hauteur (`flex-1`), donc le pied (tags, année) reste en bas. Sur mobile, le résumé est entier ;
   - filtre : `FilterMenu` sur mobile, `Segmented` dès `md` ;
   - changement de filtre : sortie puis entrée en cascade (CSS `.project-grid[data-phase]`), pas de view transition.
 - Contact : sur mobile, l'ordre du DOM est intro → formulaire → infos. Sur `xl`, la grille place le formulaire à droite sur 2 lignes.
@@ -166,3 +169,4 @@ Thème sombre unique, accent vert, surfaces en verre dépoli au-dessus d'un fond
 - Plugins MDX dans `next.config.ts` : en chaînes de caractères avec des options sérialisables (exigence Turbopack). Le thème Shiki est lu en JSON via `fs`.
 - L'intro de l'accueil translate le footer sous le pli. Le conteneur est donc en `overflow-clip` pour ne pas rendre la page scrollable, et `ScrollThumb` se recalcule aussi sur `animationend`/`transitionend`.
 - MDX : échapper `<` et `{` dans le texte. Pas d'`import` dans les fiches (les composants sont globaux).
+- Images d'un projet : dans `public/projets/<slug>/`, jamais à côté du `.mdx` dans `content/projets/<slug>/`. Next ne sert que `public/`, donc une image rangée dans `content/` donne une 404 et un cadre vide, sans erreur au build.

@@ -31,13 +31,14 @@ period: "2025 - 2026"                     # toujours entre guillemets ; une seul
 team: 2 devs · 1 designer                 # optionnel (affiché dans l'en-tête de l'étude de cas)
 stack: [Next.js, PostgreSQL, Docker]      # par ordre d'importance : la carte montre les 2 premiers, l'en-tête les 3 premiers
 cover: /projets/<slug>/cover.png          # optionnel ; absent → placeholder rayé
+thumbnail: /projets/<slug>/thumbnail.png  # optionnel, projets phares : image de la carte ; absent → cover
 demo: https://exemple.app                 # optionnel (le https:// peut être omis)
 demoLabel: Docs                           # optionnel, défaut « Démo » (ex. « Docs » pour une lib)
 repo: github.com/moi/projet               # optionnel
 ---
 
 Règles du frontmatter :
-- summary : TAILLE=phare → 120 à 180 caractères ; TAILLE=petit → 60 à 110 caractères. Pas de jargon inutile, pas de point d'exclamation.
+- summary : TAILLE=phare → 120 à 180 caractères ; TAILLE=petit → 60 à 110 caractères. Pas de jargon inutile, pas de point d'exclamation. Sur ordinateur, la carte coupe le résumé après 2 lignes (environ 80 caractères) : l'essentiel doit tenir au début. Le résumé entier s'affiche sur la page du projet.
 - category : pour un petit projet, préfère un de ces mots qui affichent une icône : CLI, API, Web, Extension, Data, DevOps. Pour un projet phare, format « Domaine · Sous-domaine » (ex. « SaaS · Logistique », « Mobile · Temps réel »).
 - kind : `oss` si le code est public et réutilisable par d'autres ; plusieurs valeurs possibles.
 - `metrics` existe dans le schéma mais n'est plus affiché : ne le remplis pas, mets les chiffres clés dans <Stats> dans le corps.
@@ -79,10 +80,12 @@ Ton : français, première personne, phrases courtes et concrètes, orienté dé
 
 4. IMAGES
 Les images vont dans le portfolio sous `public/projets/<slug>/` et sont référencées en `/projets/<slug>/fichier.png`.
-- cover (utile même pour un petit projet : affichée en haut de l'étude de cas) : 2400×1200, sujet centré avec de la marge sur les côtés (elle est recadrée en 21:8, 21:9 et 16:10 selon l'écran).
+- cover (utile même pour un petit projet : affichée en haut de l'étude de cas) : 2400×1200, affichée entière sur grand écran, recadrée en 16:10 sur mobile (garde de la marge sur les côtés).
+- thumbnail (projet phare seulement, optionnel) : image de la carte sur la page Projets, 1600×1000, par exemple le logo centré sur un fond uni. Le sujet doit tenir dans les 60 % centraux de la hauteur, car la carte recadre entre 16:10 et 21:9 selon l'écran. Sans thumbnail, la carte recadre la cover.
 - Figures : 1600×1000 (16:10).
 Si le repo contient déjà des captures exploitables, utilise-les (indique le chemin source à copier). Sinon, mets `label="capture - <nom>.png"` sans `src`, et décris dans la checklist ce qu'il faut capturer : écran ou route, état de l'interface (données de démo, modale ouverte…), taille.
-Propose 1 cover + 2 à 4 figures pour un projet phare, 1 cover + 0 à 1 figure pour un petit projet.
+Propose 1 cover + 1 thumbnail + 2 à 4 figures pour un projet phare, 1 cover + 0 à 1 figure pour un petit projet.
+Utilise les outils que tu possèdes pour faire des captures toi même de ce que tu veux montrer (quand c'est possible)
 
 5. FIN DE TÂCHE
 Écris le fichier dans DESTINATION, vérifie que le YAML est valide (guillemets, listes, `year` entier) et qu'aucun `import` n'est présent, puis affiche dans ta réponse :

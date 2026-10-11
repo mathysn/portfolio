@@ -73,7 +73,7 @@ export function ProjectHero({ project }: { project: Project }) {
         label={`couverture — ${project.slug}.png`}
         sizes="(min-width: 1280px) 1200px, 100vw"
         priority
-        className="aspect-[21/8] rounded-[20px] max-md:aspect-[16/10] sm:rounded-3xl"
+        className="aspect-[2/1] rounded-[20px] max-md:aspect-[16/10] sm:rounded-3xl"
       />
     </header>
   );

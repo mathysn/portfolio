@@ -1,0 +1,98 @@
+---
+title: MrVeto
+summary: "Plateforme de prise de rendez-vous vétérinaire : recherche géolocalisée, réservation en ligne, planning des cabinets et carnet de santé des animaux."
+category: Web · Santé animale
+kind: [web]
+featured: true
+year: 2026
+role: Lead Développeur
+period: "2026"
+team: 5 développeurs
+stack: [Symfony, Stimulus, MySQL, Leaflet, FullCalendar, Bootstrap, GitHub Actions]
+cover: /projets/mrveto/cover.png
+thumbnail: /projets/mrveto/thumbnail.png
+repo: github.com/enzodaloia/MrVeto
+---
+
+## Le contexte
+
+MrVeto met en relation des propriétaires d'animaux et des vétérinaires. Le propriétaire cherche un cabinet autour de lui, réserve un créneau en ligne et retrouve le suivi de ses animaux. Le cabinet gère ses horaires, ses rendez-vous et ses dossiers patients.
+
+Le problème visé est concret : la prise de rendez-vous passe encore par le téléphone, et en cas d'urgence on perd du temps à chercher qui est ouvert. L'objectif était de couvrir tout le parcours, de la recherche jusqu'au compte rendu de consultation.
+
+Dans l'équipe, j'ai surtout porté la recherche de vétérinaires, la carte, le bouton d'urgence, le planning du cabinet, les pages animaux et le déploiement.
+
+<Figure src="/projets/mrveto/recherche.png" alt="Page de recherche de vétérinaires autour de Dijon avec filtres, liste de résultats et carte" caption="Fig. 1 - Recherche autour d'une ville : filtres, statut ouvert ou fermé, carte avec regroupement des marqueurs" label="capture - recherche.png" />
+
+### Contraintes techniques
+
+- Sept développeurs sur le même dépôt : une branche par personne, fusion par pull request vers `dev`, puis `staging`.
+- Quatre profils aux droits distincts : propriétaire, vétérinaire, secrétaire, administrateur.
+- Un compte vétérinaire n'est actif qu'après contrôle de son SIRET et validation par un administrateur.
+- Aucune API payante ni clé à gérer : adresses via l'API Adresse de l'État, fonds de carte OpenStreetMap.
+- Un serveur de staging joignable en SSH, sans conteneur, avec une base MySQL.
+
+## Architecture
+
+L'application est rendue côté serveur avec Symfony et Twig. L'interactivité arrive par petites touches, avec un contrôleur Stimulus par besoin : carte, autocomplétion d'adresse, édition du profil en ligne, bouton d'urgence. Résultat : une seule base de code, pas d'API à maintenir en parallèle d'un second front, et des pages utilisables dès le premier rendu.
+
+<TechStack groups={[{ label: "Back", items: ["Symfony 7.4", "PHP 8.2+", "Doctrine ORM", "KnpPaginator", "Dompdf"] }, { label: "Front", items: ["Twig", "Stimulus", "Turbo", "Bootstrap 5", "Leaflet", "FullCalendar"] }, { label: "Données", items: ["MySQL", "API Adresse", "API Recherche d'entreprises"] }, { label: "Outils", items: ["Webpack Encore", "GitHub Actions", "PHPUnit"] }]} />
+
+### Recherche géolocalisée
+
+La recherche part d'une ville ou de la position du navigateur. L'autocomplétion interroge l'API Adresse après 250 ms de pause et trois caractères saisis, pour limiter les appels. Le serveur reçoit une latitude, une longitude et un rayon, puis filtre avec un rectangle englobant.
+
+```php title="src/Repository/UserRepository.php" {2}
+$latPerKm = 1 / 111.0;
+$lonPerKm = 1 / (111.0 * cos(deg2rad($lat)));
+
+$latMin = $lat - ($distance * $latPerKm);
+$latMax = $lat + ($distance * $latPerKm);
+$lonMin = $lon - ($distance * $lonPerKm);
+$lonMax = $lon + ($distance * $lonPerKm);
+```
+
+Un degré de longitude rétrécit quand on monte en latitude, d'où le cosinus de la ligne 2. Les résultats sont paginés, et le statut ouvert ou fermé des cabinets de la page est calculé avec une seule requête sur leurs horaires.
+
+<Callout type="warning" title="Limite connue">Le filtre est un carré, pas un cercle : dans les coins, un cabinet peut se trouver jusqu'à 41 % plus loin que le rayon demandé.</Callout>
+
+### Urgences et planning
+
+Le bouton d'urgence est présent sur toutes les pages. Il demande la position du navigateur, appelle `/urgence/nearest` et affiche le vétérinaire urgentiste le plus proche avec son téléphone. Ici la distance est exacte (formule de Haversine), calculée en PHP sur la liste des urgentistes, ce qui suffit tant qu'elle reste courte.
+
+<Figure src="/projets/mrveto/urgence.png" alt="Fenêtre Urgence vétérinaire affichant l'urgentiste le plus proche, sa distance et son téléphone" caption="Fig. 2 - Bouton d'urgence : l'urgentiste le plus proche en un clic" label="capture - urgence.png" />
+
+Le planning du vétérinaire repose sur FullCalendar. Il a son propre point d'entrée Webpack, donc la bibliothèque n'est chargée que sur cette page. Les rendez-vous arrivent par un endpoint JSON borné à la période affichée, et les horaires du cabinet délimitent les plages actives.
+
+<Figure src="/projets/mrveto/planning.png" alt="Planning hebdomadaire d'un vétérinaire avec rendez-vous colorés par statut et détail d'un rendez-vous" caption="Fig. 3 - Planning du cabinet : une couleur par statut, détail du rendez-vous au clic" label="capture - planning.png" />
+
+<Accordion>
+<AccordionItem title="Pourquoi pas de requête spatiale ?" open>DQL n'a ni fonctions spatiales ni trigonométrie sans bibliothèque supplémentaire. Calculer les bornes en PHP ramène le filtre à quatre comparaisons.</AccordionItem>
+<AccordionItem title="Pourquoi rsync plutôt que Docker ?">Le staging est une machine classique joignable en SSH. GitHub Actions construit les assets, pousse les fichiers par rsync, puis lance Composer, le cache et les migrations.</AccordionItem>
+<AccordionItem title="Pourquoi l'API Adresse ?">Elle est publique, sans clé, et renvoie directement les coordonnées. Le même contrôleur sert à la recherche et aux formulaires d'inscription des cabinets.</AccordionItem>
+</Accordion>
+
+## Résultats
+
+Le parcours complet fonctionne : recherche, réservation, gestion des rendez-vous par le cabinet, compte rendu en PDF et carnet de santé côté propriétaire.
+
+<Stats items={[{ value: "5 mois", label: "de développement, de janvier à juin 2026" }, { value: "7", label: "contributeurs sur le dépôt" }, { value: "61", label: "pull requests fusionnées" }, { value: "4", label: "profils utilisateurs" }]} />
+
+<Callout type="success" title="Déploiement automatisé">Chaque push sur la branche de staging construit les assets, déploie l'application et applique les migrations sans intervention manuelle.</Callout>
+
+<Figure src="/projets/mrveto/carnet-sante.png" alt="Carnet de santé d'un chat avec prochain rendez-vous, traitements en cours et vétérinaire référent" caption="Fig. 4 - Carnet de santé : prochains rendez-vous, traitements et historique par animal" label="capture - carnet-sante.png" />
+
+## Ce que j'ai appris
+
+Le déploiement m'a demandé plusieurs séries de correctifs entre mars et juin : droits sur le dossier `var/`, cache Symfony à reconstruire en production, lockfile npm désynchronisé. Un coéquipier a ensuite durci le script. J'en retiens qu'un pipeline se teste comme du code, et tôt dans le projet.
+
+Travailler à sept sur les mêmes gabarits Twig m'a appris à livrer petit et à fusionner souvent : le layout commun est le fichier que j'ai le plus modifié après la page de recherche. Côté regrets, la couverture de tests est restée mince, avec 13 tests fonctionnels. La recherche et la réservation mériteraient des tests de bout en bout.
+
+<Steps>
+<Step title="Janvier - février">Initialisation du projet Symfony, puis recherche de vétérinaires, fiche cabinet et autocomplétion d'adresse.</Step>
+<Step title="Mars">Disponibilités, gestion des rendez-vous, carnet de santé et déploiement automatique sur le staging.</Step>
+<Step title="Avril - mai">Notifications, archivage des comptes, planning du cabinet, carte interactive et suivi des soins.</Step>
+<Step title="Juin">Profil vétérinaire éditable, urgences, filtres, passe d'accessibilité et corrections finales.</Step>
+</Steps>
+
+<LinkCard href="https://github.com/enzodaloia/MrVeto" title="enzodaloia/MrVeto" meta="PHP · Twig" />

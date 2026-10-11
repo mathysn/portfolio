@@ -26,6 +26,8 @@ const frontmatterSchema = z.object({
   stack: z.array(z.string()).min(1),
   metrics: z.array(z.object({ label: z.string(), value: z.string() })).default([]),
   cover: z.string().optional(),
+  /** Image de la carte phare sur /projets ; à défaut, `cover`. */
+  thumbnail: z.string().optional(),
   demo: z.string().transform(withProtocol).optional(),
   demoLabel: z.string().default("Démo"),
   repo: z.string().transform(withProtocol).optional(),
