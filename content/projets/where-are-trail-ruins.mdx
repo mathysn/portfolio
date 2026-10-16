@@ -1,0 +1,97 @@
+---
+title: "Where are Trail Ruins?!"
+summary: "Mod Minecraft côté client qui localise les structures enfouies en lisant les chunks que le serveur envoie déjà : Trail Ruins, Ancient City et 17 autres."
+category: "Mod Minecraft"
+kind: [oss]
+featured: false
+year: 2026
+role: Développeur
+period: "2026"
+team: Solo
+stack: [Java, Fabric, Gradle, Gson]
+cover: /projets/where-are-trail-ruins/cover.png
+thumbnail: /projets/where-are-trail-ruins/thumbnail.png
+---
+
+## Le contexte
+
+Les Trail Ruins sont la structure la plus dure à trouver de Minecraft, et les fichiers du jeu expliquent pourquoi : elles sont générées environ 15 blocs sous la surface (`terrain_adaptation: bury`) et espacées d'environ 544 blocs. Survoler la forêt en cherchant à l'œil ne marche presque jamais.
+
+Je voulais un outil qui les trouve sur n'importe quel serveur, sans plugin et sans `/locate`. L'idée de départ : le serveur envoie déjà au client tous les blocs des chunks autour du joueur. Si un bloc ne peut pas apparaître naturellement dans un biome, sa présence dans ce biome trahit la structure. Les briques de boue ou la terracotta émaillée dans une jungle, ce sont des Trail Ruins, pas une coïncidence.
+
+Parti de cette seule structure, le mod en couvre aujourd'hui 19, de l'Ancient City à l'End City.
+
+<Figure src="/projets/where-are-trail-ruins/detection.png" alt="Vue aérienne d'une jungle avec trois faisceaux colorés et une boîte orange autour de Trail Ruins enterrées, message de découverte dans le chat" caption="Fig. 1 - Des Trail Ruins détectées à 104 m : annonce dans le chat, faisceau et boîte dessinés à travers le terrain" label="capture - detection.png" />
+
+### Contraintes techniques
+
+- 100 % client : aucun mixin, aucun composant serveur, le serveur de test tourne en vanilla pur.
+- Un chunk contient environ 98 000 blocs : les lire un par un à chaque chargement est trop lent.
+- Pas de thread de travail : lire le monde client depuis un autre thread expose à des accès concurrents.
+- Ne jamais forcer la génération d'un chunk, seulement lire ce qui a été reçu.
+- Zéro faux positif là où les blocs marqueurs sont du terrain ordinaire, comme la terracotta des badlands.
+
+## Architecture
+
+Chaque chunk chargé entre dans une file. À chaque tick, le client en traite 4 par défaut. Pour chaque chunk, j'échantillonne les biomes sur toute la hauteur de la colonne, je garde les structures possibles à cet endroit, puis je cherche leurs blocs marqueurs. Les blocs trouvés sont regroupés en sites, annoncés dans le chat et sauvegardés par serveur et par dimension.
+
+Le point clé est le pré-filtre. Chaque section de 16×16×16 blocs garde une palette des types de blocs qu'elle contient, en général moins de 20 entrées. Je demande d'abord à cette palette si elle contient un marqueur, en un seul test pour toutes les structures activées. Le terrain ordinaire est rejeté presque entièrement à cette étape, et seules les sections suspectes ont droit au parcours complet.
+
+```java title="ChunkScanner.java" {9}
+for (int index = 0; index < sections.length; index++) {
+	LevelChunkSection section = sections[index];
+
+	if (section == null || section.hasOnlyAir()) {
+		continue;
+	}
+
+	// The whole point: a palette walk, not 4096 block reads.
+	if (!section.maybeHas(StructureIndex::isMarker)) {
+		continue;
+	}
+
+	int baseY = level.getSectionYFromSectionIndex(index) << 4;
+```
+
+Chaque structure est un fichier JSON avec deux niveaux de marqueurs. Le tier 1 regroupe des blocs qui ne peuvent pas apparaître naturellement dans ses biomes, et lui seul peut ouvrir un site. Le tier 2 regroupe le mobilier (fourneaux, enclumes, barreaux) : il confirme un site existant mais ne crée jamais rien, car on le trouve aussi dans les Villages. Pour les Trail Ruins, j'ai extrait les marqueurs des 84 gabarits `.nbt` du jeu. Ajouter une structure revient à ajouter un fichier, sans toucher au Java.
+
+Pour l'affichage, j'ai créé un pipeline de rendu dérivé de celui du debug vanilla, avec le test de profondeur désactivé. Le faisceau et la boîte se dessinent par-dessus le terrain : les blocs ne deviennent jamais transparents.
+
+<Figure src="/projets/where-are-trail-ruins/selecteur.png" alt="Écran listant les structures de l'Overworld avec une case d'activation, une case de notification et un badge EXPERIMENTAL" caption="Fig. 2 - Le sélecteur de structures, généré à partir des profils JSON" label="capture - selecteur.png" />
+
+<TechStack groups={[{ label: "Mod", items: ["Java 21", "Fabric Loader", "Fabric API", "Mappings Mojang"] }, { label: "Rendu", items: ["RenderPipeline Blaze3D", "Access Widener"] }, { label: "Données", items: ["Gson", "Profils JSON"] }, { label: "Build et test", items: ["Gradle", "Fabric Loom", "Serveur vanilla", "RCON (Python)"] }]} />
+
+<Callout type="warning" title="Limites">10 profils sur 19 sont expérimentaux : pas de gabarit à vérifier dans le jeu, ou un risque de faux positif mesuré. Et comme tout mod de type xray, il est interdit sur la plupart des serveurs publics.</Callout>
+
+<Accordion>
+<AccordionItem title="Pourquoi pas de thread de travail ?" open>Le pré-filtre par palette rend le scan assez rapide pour tourner sur le tick client avec un petit budget, ce qui supprime tout risque d'accès concurrent au monde.</AccordionItem>
+<AccordionItem title="Pourquoi le filtre de biome ?">Sans lui, un spawn en badlands produisait 49 faux positifs en trois secondes. Il ne coûte aucune détection, puisqu'une structure ne peut pas exister hors de ses biomes.</AccordionItem>
+<AccordionItem title="Pourquoi la moyenne et pas le centre de la boîte ?">J'ai essayé le centre de la boîte pour placer le faisceau : un seul bloc isolé suffisait à l'envoyer dans le vide. La moyenne des blocs reste toujours dans la structure.</AccordionItem>
+</Accordion>
+
+## Résultats
+
+Je teste de bout en bout sur un serveur vanilla 1.21.11 avec un monde à graine fixe. Je pilote le joueur par RCON et je compare ce qu'annonce le mod à `/locate`, qu'il n'utilise pas.
+
+<Stats items={[{ value: "0", label: "faux positif au spawn en badlands (49 avant le filtre de biome)" }, { value: "4,5 blocs", label: "d'écart avec /locate sur les Trail Ruins de référence" }, { value: "19", label: "structures détectables" }, { value: "84", label: "gabarits .nbt analysés pour les Trail Ruins" }]} />
+
+<Callout type="success" title="Détection vérifiée">Les Trail Ruins de référence sont annoncées à -276, 52, -1410 quand /locate les place en -272, -1408, et le Jungle Temple voisin est trouvé à 9 blocs près.</Callout>
+
+Le regroupement en sites a demandé le plus de réglages. Des Trial Chambers ont d'abord fusionné avec leurs voisines en un seul site de plus de 50 000 blocs marqueurs sur 500 blocs de large. À l'inverse, une Ancient City se découpait en 4 ou 5 entrées. Après réglage, elle tient en un seul site de 217 × 221 blocs.
+
+<Figure src="/projets/where-are-trail-ruins/sites-trouves.png" alt="Écran en deux panneaux : filtre par type de structure à gauche, liste des sites trouvés avec distance, coordonnées et biome à droite" caption="Fig. 3 - La liste des sites trouvés, triée par distance, avec un filtre par structure" label="capture - sites-trouves.png" />
+
+<Figure src="/projets/where-are-trail-ruins/boussole.png" alt="HUD en haut à gauche avec une boussole pointant vers les Trail Ruins suivies, sa distance et son altitude relative, faisceau orange dans la jungle" caption="Fig. 4 - Un site suivi : boussole, distance horizontale et écart d'altitude, seul son faisceau reste affiché" label="capture - boussole.png" />
+
+## Ce que j'ai appris
+
+Le choix intuitif d'un marqueur était souvent faux, et seule la mesure l'a montré. Le sculk semblait propre à l'Ancient City, mais il se répand dans tout le biome deep dark : en tier 1, il signalait chaque grotte du biome. Le vrai signal, ce sont les briques de deepslate, qui n'apparaissent jamais naturellement. Même chose pour les blocs de magma du Ruined Portal (97 sites dans un seul scan, à cause des fonds océaniques) ou les distributeurs du Jungle Temple, partagés avec les Trial Chambers.
+
+Le regroupement m'a appris que chaque correction a un revers. Comparer un bloc à la boîte d'un site plutôt qu'à son centre évitait de fragmenter les grandes structures, mais laissait des structures voisines fusionner sans limite. Le plafond de taille a réglé ça, puis a laissé des fragments isolés en bordure. Il a fallu une taille maximale par profil. Pour chaque bug, j'ai relu le fichier de sites sauvegardé plutôt que les logs : une fusion peut se produire sans aucune annonce.
+
+<Steps>
+<Step title="Une structure">Trail Ruins seules : pré-filtre par palette, filtre de biome, et un monde de test piloté par RCON.</Step>
+<Step title="Multi-structures">Profils JSON, index combiné pour garder un seul passage par chunk, et sélecteur de structures.</Step>
+<Step title="Regroupement">Plafond de taille, balayage de fusion de rattrapage, et tier 2 qui ne fait plus grandir les sites.</Step>
+<Step title="Interface">Liste des sites trouvés, suivi d'un site, boussole et HUD.</Step>
+</Steps>

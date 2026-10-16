@@ -1,18 +1,16 @@
-import { ArrowUpRight, Download } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import type { ReactNode } from "react";
 import { site } from "@/lib/site";
 import { cn, gutter } from "@/lib/utils";
 
 const year = new Date().getFullYear();
 
-function SocialPill({ href, children, download }: { href: string; children: ReactNode; download?: boolean }) {
-  const external = href.startsWith("http");
+function SocialPill({ href, children }: { href: string; children: ReactNode }) {
   return (
     <a
       href={href}
-      download={download || undefined}
-      target={external ? "_blank" : undefined}
-      rel={external ? "noopener noreferrer" : undefined}
+      target="_blank"
+      rel="noopener noreferrer"
       className="btn-pill inline-flex h-9 items-center gap-1 rounded-full px-3.5 font-sans text-[13px] font-medium"
     >
       {children}
@@ -33,9 +31,6 @@ export function HomeFooter() {
         </SocialPill>
         <SocialPill href={site.links.linkedin.url}>
           LinkedIn <ArrowUpRight size={13} />
-        </SocialPill>
-        <SocialPill href={site.links.cv.url} download>
-          CV <Download size={13} />
         </SocialPill>
       </div>
     </footer>

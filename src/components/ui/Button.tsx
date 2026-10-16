@@ -1,18 +1,16 @@
 import Link from "next/link";
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from "react";
 import { cn, isExternal, isInternalRoute } from "@/lib/utils";
-import { Spinner } from "./Spinner";
 
 type Variant = "primary" | "glass" | "soft" | "link";
-/** lg 58 · submit 56 · hero 52 · md 46 · sm 40/36 · xs 30 (heights in px) · adaptive: md on phones, lg from `sm` */
-type Size = "lg" | "submit" | "hero" | "md" | "sm" | "xs" | "adaptive";
+/** lg 58 · hero 52 · md 46 · sm 40/36 · xs 30 (heights in px) · adaptive: md on phones, lg from `sm` */
+type Size = "lg" | "hero" | "md" | "sm" | "xs" | "adaptive";
 
 type BaseProps = {
   variant?: Variant;
   size?: Size;
   /** Trailing icon. On primary buttons (except sm) it sits in a dark circle. */
   icon?: ReactNode;
-  loading?: boolean;
   className?: string;
   children: ReactNode;
 };
@@ -37,7 +35,6 @@ const variantClasses: Record<Variant, string> = {
 // Primary buttons with a trailing circle are asymmetric (tight right padding).
 const primaryWithDot: Partial<Record<Size, string>> = {
   lg: "h-[58px] gap-4 pl-7 pr-[7px] text-base",
-  submit: "h-14 gap-3.5 pl-[26px] pr-[7px] text-[15px]",
   hero: "h-[52px] gap-3.5 pl-[22px] pr-1.5 text-[15px]",
   md: "h-[46px] gap-2.5 pl-[18px] pr-1.5 text-sm",
   adaptive:
@@ -46,7 +43,6 @@ const primaryWithDot: Partial<Record<Size, string>> = {
 
 const dotClasses: Partial<Record<Size, string>> = {
   lg: "size-11 text-[18px]",
-  submit: "size-[42px] text-[18px]",
   hero: "size-10 text-[18px]",
   md: "size-[34px] text-[15px]",
   adaptive: "size-[34px] text-[15px] sm:size-11 sm:text-[18px]",
@@ -55,7 +51,6 @@ const dotClasses: Partial<Record<Size, string>> = {
 const sizeClasses: Record<Exclude<Variant, "link">, Partial<Record<Size, string>>> = {
   primary: {
     lg: "h-[58px] gap-3 px-7 text-base",
-    submit: "h-14 gap-3 px-[26px] text-[15px]",
     hero: "h-[52px] gap-3 px-[22px] text-[15px]",
     md: "h-[46px] gap-3 px-5 text-sm",
     sm: "h-10 gap-2 px-[18px] text-sm",
@@ -75,7 +70,7 @@ const sizeClasses: Record<Exclude<Variant, "link">, Partial<Record<Size, string>
 };
 
 export function Button(props: ButtonProps) {
-  const { variant = "primary", size = "md", icon, loading = false, className, children, ...rest } = props;
+  const { variant = "primary", size = "md", icon, className, children, ...rest } = props;
   const withDot = variant === "primary" && icon != null && size in dotClasses;
 
   const classes = cn(
@@ -91,7 +86,6 @@ export function Button(props: ButtonProps) {
 
   const content = (
     <>
-      {loading && <Spinner />}
       {children}
       {icon != null &&
         (withDot ? <span className={cn("btn-primary-dot", dotClasses[size])}>{icon}</span> : icon)}
@@ -116,15 +110,9 @@ export function Button(props: ButtonProps) {
     );
   }
 
-  const { type = "button", disabled, ...buttonProps } = rest as Omit<NativeButtonProps, keyof BaseProps>;
+  const { type = "button", ...buttonProps } = rest as Omit<NativeButtonProps, keyof BaseProps>;
   return (
-    <button
-      type={type}
-      className={classes}
-      disabled={disabled || loading}
-      aria-busy={loading || undefined}
-      {...buttonProps}
-    >
+    <button type={type} className={classes} {...buttonProps}>
       {content}
     </button>
   );

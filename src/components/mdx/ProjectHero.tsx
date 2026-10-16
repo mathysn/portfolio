@@ -1,8 +1,10 @@
 import { ArrowUpRight } from "lucide-react";
+import type { CSSProperties } from "react";
 import { Eyebrow, MetaLabel } from "@/components/ui/Badges";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { Button } from "@/components/ui/Button";
 import { Cover } from "@/components/ui/Cover";
+import { Zoomable } from "@/components/ui/Zoomable";
 import type { Project } from "@/lib/projects";
 import { cn } from "@/lib/utils";
 
@@ -15,23 +17,38 @@ export function ProjectHero({ project }: { project: Project }) {
     { label: "Stack", value: project.stack.slice(0, 3).join(" · ") },
   ].filter((item): item is { label: string; value: string } => Boolean(item.value));
 
+  const cover = (
+    <Cover
+      src={project.cover}
+      alt={`Couverture de ${project.title}`}
+      label={`couverture — ${project.slug}.png`}
+      sizes="(min-width: 1280px) 1200px, 100vw"
+      priority
+      className="aspect-[2/1] rounded-[20px] max-md:aspect-[16/10] sm:rounded-3xl"
+    />
+  );
+
   return (
-    <header className="flex flex-col gap-7 md:gap-9">
+    <header className="@container flex flex-col gap-7 md:gap-9">
       <Breadcrumb items={[{ href: "/projets", label: "Projets" }, { label: project.title }]} />
 
-      <div className="grid grid-cols-1 items-end gap-8 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:gap-12">
-        <div className="flex flex-col gap-[18px]">
+      <div className="grid grid-cols-1 items-end gap-x-12 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
+        {/* Desktop: the title spans both columns and stays on one line, shrinking with its length if needed. */}
+        <div className="flex flex-col gap-[18px] lg:col-span-2">
           <Eyebrow>
             {project.category} — {project.year}
           </Eyebrow>
-          <h1 className="font-display text-[clamp(48px,13vw,96px)] leading-[0.9] md:text-[clamp(64px,8.4vw,120px)] tracking-[-0.02em] text-fg-strong">
+          <h1
+            style={{ "--chars": project.title.length } as CSSProperties}
+            className="font-display text-[clamp(48px,13vw,96px)] leading-[0.9] md:text-[clamp(64px,8.4vw,120px)] lg:text-[length:min(clamp(64px,8.4vw,120px),calc(100cqi/(var(--chars)*0.4)))] lg:whitespace-nowrap tracking-[-0.02em] text-fg-strong"
+          >
             {project.title}
           </h1>
-          <p className="max-w-[560px] text-[17px] leading-[1.6] text-pretty text-fg-2 sm:text-[19px]">{project.summary}</p>
         </div>
+        <p className="mt-[18px] max-w-[560px] text-[17px] leading-[1.6] text-pretty text-fg-2 sm:text-[19px]">{project.summary}</p>
         {(project.demo || project.repo) && (
           // Phones: the two buttons share the row at equal width.
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(0,1fr))] gap-2.5 sm:flex sm:flex-wrap lg:justify-end">
+          <div className="mt-8 grid grid-cols-[repeat(auto-fit,minmax(0,1fr))] gap-2.5 sm:flex sm:flex-wrap lg:mt-0 lg:justify-end">
             {project.demo && (
               <Button
                 href={project.demo}
@@ -67,14 +84,13 @@ export function ProjectHero({ project }: { project: Project }) {
         ))}
       </dl>
 
-      <Cover
-        src={project.cover}
-        alt={`Couverture de ${project.title}`}
-        label={`couverture — ${project.slug}.png`}
-        sizes="(min-width: 1280px) 1200px, 100vw"
-        priority
-        className="aspect-[2/1] rounded-[20px] max-md:aspect-[16/10] sm:rounded-3xl"
-      />
+      {project.cover ? (
+        <Zoomable src={project.cover} alt={`Couverture de ${project.title}`} className="rounded-[20px] sm:rounded-3xl">
+          {cover}
+        </Zoomable>
+      ) : (
+        cover
+      )}
     </header>
   );
 }

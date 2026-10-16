@@ -8,11 +8,11 @@ Portfolio personnel d'un développeur full-stack basé à Lyon (Mathys NOURRY), 
   - `/` : accueil plein écran, sans nav ;
   - `/projets` : grille filtrable ;
   - `/projets/[slug]` : étude de cas en MDX ;
-  - `/contact` : formulaire et coordonnées ;
+  - `/contact` : email (avec copie), GitHub, LinkedIn ;
   - pages techniques : 404, `sitemap.xml`, `robots.txt`, favicon `src/app/icon.svg` (cercle vert, « M » tracé).
-- **Stack** : Next.js 16 App Router + Turbopack, React 19, MDX (`@next/mdx`), Tailwind CSS v4 (config CSS-first, pas de `tailwind.config`), TypeScript, pnpm, zod, lucide-react, Resend.
-- **Origine** : un handoff de design (`design_handoff_portfolio/README.md` + maquettes `.dc.html`, à ouvrir dans un navigateur). C'est la référence visuelle. Depuis, le site a évolué sur demande de Mathys : nav sans « Accueil » ni CV, cartes simplifiées, grille chronologique, version mobile.
-- **Contenu** : premier vrai projet : `mrveto`. Des 9 projets placeholders hérités du design, il ne reste que `deploy-bot`, à remplacer. Les nouvelles fiches se génèrent avec `docs/prompt-projet-mdx.md`. Une capture reste un placeholder rayé tant que `cover`/`src` n'est pas fourni. `public/cv.pdf` n'existe pas encore : les liens CV donnent une 404.
+- **Stack** : Next.js 16 App Router + Turbopack, React 19, MDX (`@next/mdx`), Tailwind CSS v4 (config CSS-first, pas de `tailwind.config`), TypeScript, pnpm, zod, lucide-react.
+- **Origine** : un handoff de design (`design_handoff_portfolio/README.md` + maquettes `.dc.html`, à ouvrir dans un navigateur). C'est la référence visuelle. Depuis, le site a évolué sur demande de Mathys : nav sans « Accueil », cartes simplifiées, grille chronologique, version mobile, ni CV ni formulaire de contact (retirés : on le contacte par email, GitHub ou LinkedIn).
+- **Contenu** : projets réels `mrveto` et `where-are-trail-ruins`. Les placeholders hérités du design ont tous été retirés. Les nouvelles fiches se génèrent avec `docs/prompt-projet-mdx.md`. Une capture reste un placeholder rayé tant que `cover`/`src` n'est pas fourni.
 
 ## Travailler avec Mathys
 - Il écrit en français : réponds en français. Il veut un **plan** (mode plan) avant les gros changements.
@@ -55,8 +55,9 @@ Thème sombre unique, accent vert, surfaces en verre dépoli au-dessus d'un fond
 - **Verre** : utilitaire `glass` = dégradé blanc translucide + `backdrop-filter: blur(24px) saturate(170%)` (16px sur mobile). Son `::before` dessine un bord de 1px lumineux en haut à gauche. `glass-strong` est plus opaque, pour ce qui flotte au-dessus du contenu (nav, menus). `glass-grid` sert aux tableaux de cellules sombres (dl de méta).
 - **Rayons** :
   - `rounded-full` : pills (boutons, nav, tags, chips) ;
-  - 32 : CTA, formulaire ;
+  - 32 : CTA ;
   - 28 : grandes surfaces mobiles ;
+  - 24 : carte des contacts ;
   - 22 : cartes projet ;
   - 20 : sommaire, tuiles ;
   - 18 : cadres d'image, blocs de code ;
@@ -83,7 +84,7 @@ Thème sombre unique, accent vert, surfaces en verre dépoli au-dessus d'un fond
 - Vrai viewport mobile : piloter Chrome via CDP (`Emulation.setDeviceMetricsOverride`). La fenêtre headless ne descend pas sous ~500px, et les captures en iframe faussent parfois les pastilles.
 
 ## Données et contenu
-- `src/lib/site.ts` : identité, `brand` de la nav (« mathys.dev », la partie après le dernier point est verte), email, ville, disponibilité, liens GitHub/LinkedIn/CV, `navLinks`.
+- `src/lib/site.ts` : identité, `brand` de la nav (« mnourry.dev », la partie après le dernier point est verte), email, ville, liens GitHub/LinkedIn, `navLinks`.
 - `content/projets/<slug>.mdx` : un projet par fichier, frontmatter validé par zod dans `src/lib/projects.ts` (le build échoue si invalide).
   - Champs : `title`, `summary`, `category`, `kind` (web|api|mobile|oss, pour le filtre), `featured` (carte sur 2 colonnes avec photo), `year`, `role`, `period`, `team?`, `stack`, `cover?`, `thumbnail?` (image de la carte phare, à défaut `cover`), `demo?`, `demoLabel?`, `repo?`. `metrics` existe mais n'est plus affiché.
   - `getAllProjects()` donne l'ordre du site : année décroissante, projets phares d'abord à année égale.
@@ -101,22 +102,21 @@ Thème sombre unique, accent vert, surfaces en verre dépoli au-dessus d'un fond
   - blocs ``` (`rehype-pretty-code`, thème `src/lib/shiki-theme.json`) → `CodeFrame` ;
   - composants MDX globaux.
 - `src/app/globals.css` :
-  - tokens et variantes `fit:`/`short:` ;
-  - utilitaires `glass*`, `btn-*`, `field` ;
+  - tokens et variante `short:` ;
+  - utilitaires `glass*`, `btn-*` ;
   - prose `.prose-glass`, blocs de code ;
   - view transitions, animation d'entrée, chorégraphie du filtre.
-- Contact : server action `src/app/contact/actions.ts`, avec un schéma zod partagé client/serveur dans `src/lib/contact.ts`. Envoi via Resend si `RESEND_API_KEY` (voir `.env.example`), sinon log console.
+- Variables d'environnement (`.env.example`) : seulement `NEXT_PUBLIC_SITE_URL` (métadonnées, sitemap, robots). Elle est figée au build : la changer sur Vercel demande un redéploiement.
 
 ## Composants (`src/components/`)
 - **ui/** : primitives réutilisables.
-  - `Button` : variants `primary|glass|soft|link`, tailles `lg|submit|hero|md|sm|xs|adaptive`, `icon` en fin de bouton (dans une pastille sombre pour primary), `loading`. Rendu en `Link`, `<a>` ou `<button>` selon `href`.
+  - `Button` : variants `primary|glass|soft|link`, tailles `lg|hero|md|sm|xs|adaptive`, `icon` en fin de bouton (dans une pastille sombre pour primary). Rendu en `Link`, `<a>` ou `<button>` selon `href`.
   - `Badges` : `Tag`, `TagList`, `Category`, `Eyebrow`, `MetaLabel`, `MediaChip`, `SectionLabel`, `StatusBadge`, `PulseDot`.
   - `Cover` : cadre d'image avec placeholder rayé.
+  - `Zoomable` : rend un `Cover` cliquable et ouvre l'image entière (non recadrée) dans un `<dialog>` natif (`.lightbox` dans `globals.css`). Fermeture par Échap, clic n'importe où ou bouton. L'image pleine n'est chargée qu'à l'ouverture. Utilisé par `Figure` et la couverture de `ProjectHero` quand `src` existe.
   - `Segmented` : filtre en pills avec pastille glissante.
-  - `ChipGroup` : choix unique (objet du contact).
-  - `Field` : `Input`, `Textarea` avec états focus et erreur.
   - `Collapsible` : `<details>` animé.
-  - `Breadcrumb`, `Spinner`, `BrandIcons`.
+  - `Breadcrumb`, `BrandIcons`.
 - **layout/** :
   - `Navbar` (pill, pastille glissante, cachée au scroll sous `lg`) ;
   - `Background` ;
@@ -128,10 +128,9 @@ Thème sombre unique, accent vert, surfaces en verre dépoli au-dessus d'un fond
   - `FilterMenu` : menu déroulant du filtre sur mobile ;
   - `CtaBanner` (« Un projet en tête ? ») ;
   - `ProjectPager` : précédent/suivant, « suivant » en premier sur mobile.
-- **contact/** :
-  - `ContactCard`/`ContactForm` : états idle → envoi → envoyé, validation client et serveur ;
-  - `InfoPanel` : email + copier, localisation, disponibilité ;
-  - `LinkTiles` : GitHub, LinkedIn, CV.
+- **contact/** : `ContactLinks` (`ContactInfo.tsx`), une carte en verre à 3 lignes :
+  - email : lien `mailto:` + `CopyButton`, avec un `<wbr>` après le @ pour passer à la ligne sur les petits écrans au lieu d'être coupé ;
+  - GitHub et LinkedIn : la ligne entière est un lien externe.
 - **mdx/** :
   - `ProjectHero` : en-tête de l'étude de cas, généré depuis le frontmatter ;
   - `Toc` (sommaire sticky ≥ xl) et `TocDisclosure` (repliable < xl) ;
@@ -144,9 +143,7 @@ Thème sombre unique, accent vert, surfaces en verre dépoli au-dessus d'un fond
 
 ## Conventions UI
 - Colonne de page : `gutter` (gouttières 20 → 32 → 48 → 64 → 120px + `max-w-[1440px]`, donc un contenu ≤ 1200px). Paliers Tailwind standards ; `xl` = maquette desktop.
-- Variantes maison :
-  - `fit:` (≥ 1280px de large ET ≥ 760px de haut) : Contact tient sans scroll ;
-  - `short:` (hauteur ≤ 500px) : téléphone en paysage.
+- Variante maison `short:` (hauteur ≤ 500px) : téléphone en paysage.
 - Survols des utilitaires `btn-*` sous `@media (hover: hover)`. Chaque bouton a un retour d'appui (`:active` → léger scale). Cibles tactiles ≥ 44px via `pointer-coarse:`.
 - Pastilles glissantes (nav, filtre desktop) : tant qu'elles ne sont pas mesurées (ou sans JS), l'élément actif se colore lui-même.
 - Nav : même pill à toutes les tailles, masquée sur `/`, se cache au scroll vers le bas sous `lg`.
@@ -155,7 +152,9 @@ Thème sombre unique, accent vert, surfaces en verre dépoli au-dessus d'un fond
   - hauteur des cartes : dès `md`, le résumé est coupé à 2 lignes (`md:line-clamp-2`) pour que toutes les rangées fassent la même hauteur (252px avec une carte phare). Le contenu d'une carte remplit toute sa hauteur (`flex-1`), donc le pied (tags, année) reste en bas. Sur mobile, le résumé est entier ;
   - filtre : `FilterMenu` sur mobile, `Segmented` dès `md` ;
   - changement de filtre : sortie puis entrée en cascade (CSS `.project-grid[data-phase]`), pas de view transition.
-- Contact : sur mobile, l'ordre du DOM est intro → formulaire → infos. Sur `xl`, la grille place le formulaire à droite sur 2 lignes.
+- Contact : en-tête identique à celui de Projets (même padding haut, même taille de titre, aligné à gauche), suivi du paragraphe. La carte des contacts (600px max), centrée en largeur, suit le titre avec le même écart que le filtre sur Projets (`pt-8 sm:pt-12`). Elle n'est pas centrée verticalement : Mathys la veut collée au titre. Mathys a refusé une version avec l'email en très grand.
+- Titre d'une fiche (`ProjectHero`) : dès `lg`, il occupe toute la largeur sur **une seule ligne** (`whitespace-nowrap`). Sa taille se réduit selon le nombre de caractères (`--chars`, unités `cqi`) pour ne jamais déborder.
+- Prose des fiches (`.prose-glass`) : paragraphes et puces justifiés, **sans** césure (Mathys ne veut pas de mots coupés par un tiret).
 - Animation d'entrée : attribut `data-reveal` (+ `--d` pour le délai). Elle ne joue qu'au premier chargement : `RevealGate` pose `html[data-ready]`.
 
 ## Pièges déjà rencontrés (ne pas les réintroduire)
@@ -165,8 +164,8 @@ Thème sombre unique, accent vert, surfaces en verre dépoli au-dessus d'un fond
 - `.glass` impose `position: relative` : ne pas le combiner avec `sticky`/`fixed` sur le même élément. Mettre le positionnement sur un parent.
 - Scanner Tailwind : la classe arbitraire `@max-[320px]:` n'a pas été générée. Préférer les tailles nommées (`@max-xs:`) ou un `@custom-variant`. En cas de doute, vérifier la présence de la classe dans le CSS servi.
 - Les règles CSS globales hors `@layer` écrasent les utilitaires Tailwind (ex. `scrollbar-width`) : mettre les styles globaux dans `@layer base`.
-- Formulaire React 19 : avec `<form action>`, React réinitialise les champs après l'action. Ici, `onSubmit` fait `preventDefault` puis un dispatch manuel dans `startTransition`, pour garder la saisie en cas d'erreur serveur.
 - Plugins MDX dans `next.config.ts` : en chaînes de caractères avec des options sérialisables (exigence Turbopack). Le thème Shiki est lu en JSON via `fs`.
 - L'intro de l'accueil translate le footer sous le pli. Le conteneur est donc en `overflow-clip` pour ne pas rendre la page scrollable, et `ScrollThumb` se recalcule aussi sur `animationend`/`transitionend`.
 - MDX : échapper `<` et `{` dans le texte. Pas d'`import` dans les fiches (les composants sont globaux).
 - Images d'un projet : dans `public/projets/<slug>/`, jamais à côté du `.mdx` dans `content/projets/<slug>/`. Next ne sert que `public/`, donc une image rangée dans `content/` donne une 404 et un cadre vide, sans erreur au build.
+- En `pnpm dev` seulement, l'onglet affiche l'URL pendant environ 0,5 s à chaque navigation. Le `<title>` arrive en streaming après la page, et React ne l'insère qu'à la fin de la view transition `page-in`. En prod (`pnpm build && pnpm start`), les pages préchargées arrivent d'un bloc et le titre change sans trou. Ne rien corriger : `htmlLimitedBots: /.*/` a été essayé et ne change rien en dev.

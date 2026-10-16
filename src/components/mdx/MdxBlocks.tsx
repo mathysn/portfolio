@@ -4,6 +4,7 @@ import { MetaLabel, TagList } from "@/components/ui/Badges";
 import { GithubIcon } from "@/components/ui/BrandIcons";
 import { Collapsible } from "@/components/ui/Collapsible";
 import { Cover } from "@/components/ui/Cover";
+import { Zoomable } from "@/components/ui/Zoomable";
 import { cn } from "@/lib/utils";
 
 /* ── Callout ─────────────────────────────────────────────── */
@@ -68,15 +69,24 @@ export function Figure({
   /** Placeholder caption shown while there is no image. */
   label?: string;
 }) {
+  const cover = (
+    <Cover
+      src={src}
+      alt={alt ?? caption ?? ""}
+      label={label ?? "capture"}
+      sizes="(min-width: 1280px) 720px, 100vw"
+      className="aspect-[16/10]"
+    />
+  );
   return (
     <figure className="my-2 flex flex-col gap-3">
-      <Cover
-        src={src}
-        alt={alt ?? caption ?? ""}
-        label={label ?? "capture"}
-        sizes="(min-width: 1280px) 720px, 100vw"
-        className="aspect-[16/10]"
-      />
+      {src ? (
+        <Zoomable src={src} alt={alt ?? caption ?? ""} caption={caption}>
+          {cover}
+        </Zoomable>
+      ) : (
+        cover
+      )}
       {caption && <figcaption className="font-mono text-[13px] text-faint">{caption}</figcaption>}
     </figure>
   );
