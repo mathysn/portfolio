@@ -30,8 +30,8 @@ role: Développeur full-stack              # mon rôle
 period: "2025 - 2026"                     # toujours entre guillemets ; une seule année → "2024"
 team: 2 devs · 1 designer                 # optionnel (affiché dans l'en-tête de l'étude de cas)
 stack: [Next.js, PostgreSQL, Docker]      # par ordre d'importance : la carte montre les 2 premiers, l'en-tête les 3 premiers
-cover: /projets/<slug>/cover.png          # optionnel ; absent → placeholder rayé
-thumbnail: /projets/<slug>/thumbnail.png  # optionnel, projets phares : image de la carte ; absent → cover
+cover: /projets/<slug>/cover.avif          # optionnel ; absent → placeholder rayé
+thumbnail: /projets/<slug>/thumbnail.avif  # optionnel, projets phares : image de la carte ; absent → cover
 demo: https://exemple.app                 # optionnel (le https:// peut être omis)
 demoLabel: Docs                           # optionnel, défaut « Démo » (ex. « Docs » pour une lib)
 repo: github.com/moi/projet               # optionnel
@@ -48,7 +48,7 @@ Règles du frontmatter :
 3. CORPS MDX
 Composants disponibles SANS import (n'écris aucun `import`) :
 - <Callout type="info|success|warning" title="Titre">Texte court.</Callout>
-- <Figure src="/projets/<slug>/vue.png" alt="Description" caption="Fig. 1 - Légende" label="capture - vue.png" />   (sans src → placeholder qui affiche `label`)
+- <Figure src="/projets/<slug>/vue.avif" alt="Description" caption="Fig. 1 - Légende" label="capture - vue.avif" />   (sans src → placeholder qui affiche `label`)
 - <Stats items={[{ value: "-38 %", label: "temps de traitement" }, { value: "4 200", label: "utilisateurs actifs" }]} />
 - <TechStack groups={[{ label: "Front", items: ["Next.js", "Tailwind"] }, { label: "Back", items: ["NestJS"] }]} />
 - <Steps><Step title="Découverte">Une phrase.</Step><Step title="Lancement">Une phrase.</Step></Steps>
@@ -79,11 +79,11 @@ Structure selon TAILLE :
 Ton : français, première personne, phrases courtes et concrètes, orienté décisions et résultats. Pas de superlatifs (« révolutionnaire », « ultra »), pas d'emoji, pas de tiret long « — » : utilise « - », « : » ou une virgule.
 
 4. IMAGES
-Les images vont dans le portfolio sous `public/projets/<slug>/` et sont référencées en `/projets/<slug>/fichier.png`.
+Les images vont dans le portfolio sous `public/projets/<slug>/` et sont référencées en `/projets/<slug>/fichier.avif`. Toutes les images sont en AVIF (qualité ~65, sous-échantillonnage 4:4:4 pour garder le texte des captures net) : convertis les captures PNG ou JPG avant de les copier.
 - cover (utile même pour un petit projet : affichée en haut de l'étude de cas) : 2400×1200, affichée entière sur grand écran, recadrée en 16:10 sur mobile (garde de la marge sur les côtés).
 - thumbnail (projet phare seulement, optionnel) : image de la carte sur la page Projets, 1600×1000, par exemple le logo centré sur un fond uni. Le sujet doit tenir dans les 60 % centraux de la hauteur, car la carte recadre entre 16:10 et 21:9 selon l'écran. Sans thumbnail, la carte recadre la cover.
 - Figures : 1600×1000 (16:10).
-Si le repo contient déjà des captures exploitables, utilise-les (indique le chemin source à copier). Sinon, mets `label="capture - <nom>.png"` sans `src`, et décris dans la checklist ce qu'il faut capturer : écran ou route, état de l'interface (données de démo, modale ouverte…), taille.
+Si le repo contient déjà des captures exploitables, utilise-les (indique le chemin source à copier). Sinon, mets `label="capture - <nom>.avif"` sans `src`, et décris dans la checklist ce qu'il faut capturer : écran ou route, état de l'interface (données de démo, modale ouverte…), taille.
 Propose 1 cover + 1 thumbnail + 2 à 4 figures pour un projet phare, 1 cover + 0 à 1 figure pour un petit projet.
 Utilise les outils que tu possèdes pour faire des captures toi même de ce que tu veux montrer (quand c'est possible)
 

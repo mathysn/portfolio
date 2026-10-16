@@ -1,10 +1,14 @@
 import { ArrowRight } from "lucide-react";
+import type { Metadata } from "next";
 import type { CSSProperties } from "react";
 import { HomeFooter } from "@/components/layout/Footers";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { Button } from "@/components/ui/Button";
+import { pageMetadata, personJsonLd } from "@/lib/seo";
 import { site } from "@/lib/site";
 import { cn } from "@/lib/utils";
+
+export const metadata: Metadata = pageMetadata({ description: site.description, path: "/" });
 
 const LETTER_STAGGER = 35;
 const delay = (ms: number) => ({ "--d": `${ms}ms` }) as CSSProperties;
@@ -47,6 +51,11 @@ export default function HomePage() {
     <PageTransition>
       {/* overflow-clip: the intro animation translates the footer below the fold — don't make the page scrollable. */}
       <div className="flex min-h-dvh flex-col overflow-clip">
+        <script
+          type="application/ld+json"
+          // `<` escaped so no string in the data can close the script tag.
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd()).replace(/</g, "\\u003c") }}
+        />
         <main
           id="contenu"
           className="flex flex-1 flex-col items-center justify-center px-5 pt-[max(64px,env(safe-area-inset-top))] pb-16 text-center short:py-8"

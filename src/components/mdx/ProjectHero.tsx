@@ -21,7 +21,7 @@ export function ProjectHero({ project }: { project: Project }) {
     <Cover
       src={project.cover}
       alt={`Couverture de ${project.title}`}
-      label={`couverture — ${project.slug}.png`}
+      label={`couverture — ${project.slug}.avif`}
       sizes="(min-width: 1280px) 1200px, 100vw"
       priority
       className="aspect-[2/1] rounded-[20px] max-md:aspect-[16/10] sm:rounded-3xl"

@@ -6,12 +6,14 @@ import { CtaBanner } from "@/components/projects/CtaBanner";
 import { ProjectsExplorer } from "@/components/projects/ProjectsExplorer";
 import { Eyebrow } from "@/components/ui/Badges";
 import { getAllProjects } from "@/lib/projects";
+import { pageMetadata } from "@/lib/seo";
 import { cn, gutter, pad2 } from "@/lib/utils";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Projets",
   description: "Applications web, API et outils open source, du plus récent au plus ancien.",
-};
+  path: "/projets",
+});
 
 const delay = (ms: number) => ({ "--d": `${ms}ms` }) as CSSProperties;
 

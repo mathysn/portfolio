@@ -39,7 +39,7 @@ export function ProjectCard({ project, style }: { project: Project; style?: CSSP
           <Cover
             src={project.thumbnail ?? project.cover}
             alt={`Aperçu de ${project.title}`}
-            label={`capture — ${project.slug}.png`}
+            label={`capture — ${project.slug}.avif`}
             sizes="(min-width: 1280px) 440px, (min-width: 1024px) 50vw, 100vw"
             className="aspect-[16/10] rounded-[16px] md:aspect-[21/9] lg:aspect-auto lg:h-full lg:min-h-[236px]"
           />

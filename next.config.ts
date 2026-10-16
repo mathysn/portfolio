@@ -26,6 +26,8 @@ const nextConfig: NextConfig = {
   // Dev only: let tunnels (e.g. `cloudflared tunnel --url localhost:3000`) load the dev assets,
   // otherwise Next blocks them and the page never hydrates on the phone.
   allowedDevOrigins: ["*.trycloudflare.com"],
+  // Sources are AVIF: serve AVIF too (WebP fallback), otherwise next/image re-encodes them to WebP.
+  images: { formats: ["image/avif", "image/webp"] },
 };
 
 export default withMDX(nextConfig);

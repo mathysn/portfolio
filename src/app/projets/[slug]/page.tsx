@@ -8,6 +8,7 @@ import { Toc, TocDisclosure } from "@/components/mdx/Toc";
 import { CtaBanner } from "@/components/projects/CtaBanner";
 import { ProjectPager } from "@/components/projects/ProjectPager";
 import { getAdjacentProjects, getAllProjects, getHeadings, getProject } from "@/lib/projects";
+import { pageMetadata } from "@/lib/seo";
 import { cn, gutter } from "@/lib/utils";
 
 export const dynamicParams = false;
@@ -20,11 +21,12 @@ export async function generateMetadata({ params }: PageProps<"/projets/[slug]">)
   const { slug } = await params;
   const project = getProject(slug);
   if (!project) return {};
-  return {
+  return pageMetadata({
     title: project.title,
     description: project.summary,
-    openGraph: { title: project.title, description: project.summary, type: "article" },
-  };
+    path: `/projets/${slug}`,
+    type: "article",
+  });
 }
 
 export default async function ProjectPage({ params }: PageProps<"/projets/[slug]">) {

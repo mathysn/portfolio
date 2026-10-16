@@ -4,6 +4,7 @@ import { Background } from "@/components/layout/Background";
 import { Navbar } from "@/components/layout/Navbar";
 import { RevealGate } from "@/components/layout/RevealGate";
 import { ScrollThumb } from "@/components/layout/ScrollThumb";
+import { pageMetadata } from "@/lib/seo";
 import { site } from "@/lib/site";
 import "./globals.css";
 
@@ -24,6 +25,10 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// Share card defaults (pages override them with their own pageMetadata). No canonical here:
+// it would leak to pages that don't set one, like the 404.
+const { openGraph, twitter } = pageMetadata({ description: site.description, path: "/" });
+
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
@@ -31,13 +36,13 @@ export const metadata: Metadata = {
     template: `%s - ${site.name}`,
   },
   description: site.description,
-  openGraph: {
-    type: "website",
-    locale: "fr_FR",
-    siteName: site.name,
-    title: `${site.name} - ${site.role}`,
-    description: site.description,
-  },
+  authors: [{ name: site.name, url: site.url }],
+  creator: site.name,
+  // Indexing is the default; only widen Google's previews. (An explicit "index" here would
+  // contradict the "noindex" Next adds on the 404.)
+  robots: { googleBot: { "max-image-preview": "large", "max-snippet": -1 } },
+  openGraph,
+  twitter,
 };
 
 export const viewport: Viewport = {

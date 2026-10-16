@@ -9,8 +9,8 @@ role: Développeur
 period: "2026"
 team: Solo
 stack: [Java, Fabric, Gradle, Gson]
-cover: /projets/where-are-trail-ruins/cover.png
-thumbnail: /projets/where-are-trail-ruins/thumbnail.png
+cover: /projets/where-are-trail-ruins/cover.avif
+thumbnail: /projets/where-are-trail-ruins/thumbnail.avif
 ---
 
 ## Le contexte
@@ -21,7 +21,7 @@ Je voulais un outil qui les trouve sur n'importe quel serveur, sans plugin et sa
 
 Parti de cette seule structure, le mod en couvre aujourd'hui 19, de l'Ancient City à l'End City.
 
-<Figure src="/projets/where-are-trail-ruins/detection.png" alt="Vue aérienne d'une jungle avec trois faisceaux colorés et une boîte orange autour de Trail Ruins enterrées, message de découverte dans le chat" caption="Fig. 1 - Des Trail Ruins détectées à 104 m : annonce dans le chat, faisceau et boîte dessinés à travers le terrain" label="capture - detection.png" />
+<Figure src="/projets/where-are-trail-ruins/detection.avif" alt="Vue aérienne d'une jungle avec trois faisceaux colorés et une boîte orange autour de Trail Ruins enterrées, message de découverte dans le chat" caption="Fig. 1 - Des Trail Ruins détectées à 104 m : annonce dans le chat, faisceau et boîte dessinés à travers le terrain" label="capture - detection.avif" />
 
 ### Contraintes techniques
 
@@ -57,7 +57,7 @@ Chaque structure est un fichier JSON avec deux niveaux de marqueurs. Le tier 1 r
 
 Pour l'affichage, j'ai créé un pipeline de rendu dérivé de celui du debug vanilla, avec le test de profondeur désactivé. Le faisceau et la boîte se dessinent par-dessus le terrain : les blocs ne deviennent jamais transparents.
 
-<Figure src="/projets/where-are-trail-ruins/selecteur.png" alt="Écran listant les structures de l'Overworld avec une case d'activation, une case de notification et un badge EXPERIMENTAL" caption="Fig. 2 - Le sélecteur de structures, généré à partir des profils JSON" label="capture - selecteur.png" />
+<Figure src="/projets/where-are-trail-ruins/selecteur.avif" alt="Écran listant les structures de l'Overworld avec une case d'activation, une case de notification et un badge EXPERIMENTAL" caption="Fig. 2 - Le sélecteur de structures, généré à partir des profils JSON" label="capture - selecteur.avif" />
 
 <TechStack groups={[{ label: "Mod", items: ["Java 21", "Fabric Loader", "Fabric API", "Mappings Mojang"] }, { label: "Rendu", items: ["RenderPipeline Blaze3D", "Access Widener"] }, { label: "Données", items: ["Gson", "Profils JSON"] }, { label: "Build et test", items: ["Gradle", "Fabric Loom", "Serveur vanilla", "RCON (Python)"] }]} />
 
@@ -79,9 +79,9 @@ Je teste de bout en bout sur un serveur vanilla 1.21.11 avec un monde à graine 
 
 Le regroupement en sites a demandé le plus de réglages. Des Trial Chambers ont d'abord fusionné avec leurs voisines en un seul site de plus de 50 000 blocs marqueurs sur 500 blocs de large. À l'inverse, une Ancient City se découpait en 4 ou 5 entrées. Après réglage, elle tient en un seul site de 217 × 221 blocs.
 
-<Figure src="/projets/where-are-trail-ruins/sites-trouves.png" alt="Écran en deux panneaux : filtre par type de structure à gauche, liste des sites trouvés avec distance, coordonnées et biome à droite" caption="Fig. 3 - La liste des sites trouvés, triée par distance, avec un filtre par structure" label="capture - sites-trouves.png" />
+<Figure src="/projets/where-are-trail-ruins/sites-trouves.avif" alt="Écran en deux panneaux : filtre par type de structure à gauche, liste des sites trouvés avec distance, coordonnées et biome à droite" caption="Fig. 3 - La liste des sites trouvés, triée par distance, avec un filtre par structure" label="capture - sites-trouves.avif" />
 
-<Figure src="/projets/where-are-trail-ruins/boussole.png" alt="HUD en haut à gauche avec une boussole pointant vers les Trail Ruins suivies, sa distance et son altitude relative, faisceau orange dans la jungle" caption="Fig. 4 - Un site suivi : boussole, distance horizontale et écart d'altitude, seul son faisceau reste affiché" label="capture - boussole.png" />
+<Figure src="/projets/where-are-trail-ruins/boussole.avif" alt="HUD en haut à gauche avec une boussole pointant vers les Trail Ruins suivies, sa distance et son altitude relative, faisceau orange dans la jungle" caption="Fig. 4 - Un site suivi : boussole, distance horizontale et écart d'altitude, seul son faisceau reste affiché" label="capture - boussole.avif" />
 
 ## Ce que j'ai appris
 

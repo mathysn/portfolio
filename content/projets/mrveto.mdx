@@ -9,8 +9,8 @@ role: Lead Développeur
 period: "2026"
 team: 5 développeurs
 stack: [Symfony, Stimulus, MySQL, Leaflet, FullCalendar, Bootstrap, GitHub Actions]
-cover: /projets/mrveto/cover.png
-thumbnail: /projets/mrveto/thumbnail.png
+cover: /projets/mrveto/cover.avif
+thumbnail: /projets/mrveto/thumbnail.avif
 repo: github.com/enzodaloia/MrVeto
 ---
 
@@ -22,7 +22,7 @@ Le problème visé est concret : la prise de rendez-vous passe encore par le té
 
 Dans l'équipe, j'ai surtout porté la recherche de vétérinaires, la carte, le bouton d'urgence, le planning du cabinet, les pages animaux et le déploiement.
 
-<Figure src="/projets/mrveto/recherche.png" alt="Page de recherche de vétérinaires autour de Dijon avec filtres, liste de résultats et carte" caption="Fig. 1 - Recherche autour d'une ville : filtres, statut ouvert ou fermé, carte avec regroupement des marqueurs" label="capture - recherche.png" />
+<Figure src="/projets/mrveto/recherche.avif" alt="Page de recherche de vétérinaires autour de Dijon avec filtres, liste de résultats et carte" caption="Fig. 1 - Recherche autour d'une ville : filtres, statut ouvert ou fermé, carte avec regroupement des marqueurs" label="capture - recherche.avif" />
 
 ### Contraintes techniques
 
@@ -60,11 +60,11 @@ Un degré de longitude rétrécit quand on monte en latitude, d'où le cosinus d
 
 Le bouton d'urgence est présent sur toutes les pages. Il demande la position du navigateur, appelle `/urgence/nearest` et affiche le vétérinaire urgentiste le plus proche avec son téléphone. Ici la distance est exacte (formule de Haversine), calculée en PHP sur la liste des urgentistes, ce qui suffit tant qu'elle reste courte.
 
-<Figure src="/projets/mrveto/urgence.png" alt="Fenêtre Urgence vétérinaire affichant l'urgentiste le plus proche, sa distance et son téléphone" caption="Fig. 2 - Bouton d'urgence : l'urgentiste le plus proche en un clic" label="capture - urgence.png" />
+<Figure src="/projets/mrveto/urgence.avif" alt="Fenêtre Urgence vétérinaire affichant l'urgentiste le plus proche, sa distance et son téléphone" caption="Fig. 2 - Bouton d'urgence : l'urgentiste le plus proche en un clic" label="capture - urgence.avif" />
 
 Le planning du vétérinaire repose sur FullCalendar. Il a son propre point d'entrée Webpack, donc la bibliothèque n'est chargée que sur cette page. Les rendez-vous arrivent par un endpoint JSON borné à la période affichée, et les horaires du cabinet délimitent les plages actives.
 
-<Figure src="/projets/mrveto/planning.png" alt="Planning hebdomadaire d'un vétérinaire avec rendez-vous colorés par statut et détail d'un rendez-vous" caption="Fig. 3 - Planning du cabinet : une couleur par statut, détail du rendez-vous au clic" label="capture - planning.png" />
+<Figure src="/projets/mrveto/planning.avif" alt="Planning hebdomadaire d'un vétérinaire avec rendez-vous colorés par statut et détail d'un rendez-vous" caption="Fig. 3 - Planning du cabinet : une couleur par statut, détail du rendez-vous au clic" label="capture - planning.avif" />
 
 <Accordion>
 <AccordionItem title="Pourquoi pas de requête spatiale ?" open>DQL n'a ni fonctions spatiales ni trigonométrie sans bibliothèque supplémentaire. Calculer les bornes en PHP ramène le filtre à quatre comparaisons.</AccordionItem>
@@ -80,7 +80,7 @@ Le parcours complet fonctionne : recherche, réservation, gestion des rendez-vou
 
 <Callout type="success" title="Déploiement automatisé">Chaque push sur la branche de staging construit les assets, déploie l'application et applique les migrations sans intervention manuelle.</Callout>
 
-<Figure src="/projets/mrveto/carnet-sante.png" alt="Carnet de santé d'un chat avec prochain rendez-vous, traitements en cours et vétérinaire référent" caption="Fig. 4 - Carnet de santé : prochains rendez-vous, traitements et historique par animal" label="capture - carnet-sante.png" />
+<Figure src="/projets/mrveto/carnet-sante.avif" alt="Carnet de santé d'un chat avec prochain rendez-vous, traitements en cours et vétérinaire référent" caption="Fig. 4 - Carnet de santé : prochains rendez-vous, traitements et historique par animal" label="capture - carnet-sante.avif" />
 
 ## Ce que j'ai appris
 

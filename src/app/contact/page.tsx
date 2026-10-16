@@ -4,12 +4,14 @@ import { ContactLinks } from "@/components/contact/ContactInfo";
 import { SiteFooter } from "@/components/layout/Footers";
 import { PageTransition } from "@/components/layout/PageTransition";
 import { Eyebrow } from "@/components/ui/Badges";
+import { pageMetadata } from "@/lib/seo";
 import { cn, gutter } from "@/lib/utils";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Contact",
   description: "Une mission freelance, un poste ou une question : écrivez-moi, je réponds sous 48 h.",
-};
+  path: "/contact",
+});
 
 const delay = (ms: number) => ({ "--d": `${ms}ms` }) as CSSProperties;
 

@@ -9,7 +9,7 @@ Portfolio personnel d'un développeur full-stack basé à Lyon (Mathys NOURRY), 
   - `/projets` : grille filtrable ;
   - `/projets/[slug]` : étude de cas en MDX ;
   - `/contact` : email (avec copie), GitHub, LinkedIn ;
-  - pages techniques : 404, `sitemap.xml`, `robots.txt`, favicon `src/app/icon.svg` (cercle vert, « M » tracé).
+  - pages techniques : 404, `sitemap.xml`, `robots.txt`, favicon `src/app/icon.svg` (cercle vert, « M » tracé), `src/app/apple-icon.png` (180×180, « M » sur carré vert plein), image de partage `public/og.jpg`.
 - **Stack** : Next.js 16 App Router + Turbopack, React 19, MDX (`@next/mdx`), Tailwind CSS v4 (config CSS-first, pas de `tailwind.config`), TypeScript, pnpm, zod, lucide-react.
 - **Origine** : un handoff de design (`design_handoff_portfolio/README.md` + maquettes `.dc.html`, à ouvrir dans un navigateur). C'est la référence visuelle. Depuis, le site a évolué sur demande de Mathys : nav sans « Accueil », cartes simplifiées, grille chronologique, version mobile, ni CV ni formulaire de contact (retirés : on le contacte par email, GitHub ou LinkedIn).
 - **Contenu** : projets réels `mrveto` et `where-are-trail-ruins`. Les placeholders hérités du design ont tous été retirés. Les nouvelles fiches se génèrent avec `docs/prompt-projet-mdx.md`. Une capture reste un placeholder rayé tant que `cover`/`src` n'est pas fourni.
@@ -19,7 +19,17 @@ Portfolio personnel d'un développeur full-stack basé à Lyon (Mathys NOURRY), 
 - **Pas de tiret long « — »** dans ce qu'il voit (titres d'onglet, nouveaux textes) : utilise « - ». Le contenu existant en contient encore.
 - Il a souvent `pnpm dev` déjà lancé sur le port 3000 : ne lance pas un second serveur (Next refuse), utilise le sien.
 - Il teste sur téléphone via un tunnel Cloudflare. `*.trycloudflare.com` est autorisé dans `allowedDevOrigins` de `next.config.ts` ; sans ça, le JS ne se charge pas sur le téléphone.
-- Pas encore de commit (repo git sans historique) : ne commite que s'il le demande.
+- Repo GitHub `mathysn/portfolio`. Ne commite et ne pousse que s'il le demande : **un push sur `main` met le site en production**.
+
+## Déploiement
+- **Vercel**, branche `main` → production ; les autres branches donnent des URLs de prévisualisation.
+- Domaine **`mnourry.dev`**, acheté chez OVH. La zone DNS OVH contient :
+  - `A @ → 216.198.79.1` ;
+  - `CNAME www → <id>.vercel-dns-017.com.` (avec le point final) ;
+  - les enregistrements mail d'OVH (MX, SPF, DKIM, SRV), à laisser.
+
+  `www` redirige en 308 vers l'apex.
+- Seule variable d'environnement sur Vercel : `NEXT_PUBLIC_SITE_URL=https://mnourry.dev`, à créer en type **Config** et pas Secret (un préfixe `NEXT_PUBLIC_` est refusé en Secret). Elle est figée au build : après un changement, il faut un Redeploy.
 - **Tenir ce fichier à jour** : après chaque changement important (nouvelle page ou section, nouveau composant ou hook, changement d'identité visuelle, de structure, de convention ou de schéma du frontmatter, nouveau piège découvert), mets à jour la section concernée de ce CLAUDE.md dans la même tâche, sans attendre qu'on le demande. Retire ce qui n'est plus vrai.
 
 ## Identité visuelle (« verre trempé »)
@@ -90,9 +100,20 @@ Thème sombre unique, accent vert, surfaces en verre dépoli au-dessus d'un fond
   - `getAllProjects()` donne l'ordre du site : année décroissante, projets phares d'abord à année égale.
   - `getHeadings()` doit produire les mêmes ids que `rehype-slug` (même github-slugger).
 - `docs/prompt-projet-mdx.md` : prompt à donner dans un autre repo pour générer la fiche MDX d'un projet.
-- Images : `public/projets/<slug>/…`, référencées en `/projets/<slug>/fichier.png`. Formats : couverture 2400×1200, vignette de carte 1600×1000, figures 16:10.
+- Images : `public/projets/<slug>/…`, référencées en `/projets/<slug>/fichier.avif`. Formats : couverture 2400×1200, vignette de carte 1600×1000, figures 16:10.
+  - **Toutes en AVIF** (demande de Mathys). Conversion avec `sharp`, déjà présent dans le store pnpm : `quality 65`, `effort 6`, `chromaSubsampling "4:4:4"` pour garder le texte des captures net. `next.config.ts` sert de l'AVIF (`images.formats`), avec repli WebP puis JPEG.
+  - **Seules exceptions** : `og.jpg` et `apple-icon.png`. Les réseaux sociaux n'affichent pas d'aperçu en AVIF, et `apple-icon` n'accepte que PNG ou JPG.
   - `cover` : le cadre de `ProjectHero` est en 2:1 dès `md` pour l'afficher entière ; il est recadré en 16:10 sur mobile.
   - `thumbnail` : la carte phare recadre entre 16:10 et 21:9 selon l'écran (`object-cover`), donc le sujet doit tenir dans les 60 % centraux de la hauteur (ex. logo centré sur fond uni).
+
+## Référencement
+But : une recherche « Mathys Nourry » doit faire remonter le site, le LinkedIn et le GitHub.
+- `src/lib/seo.ts` :
+  - `pageMetadata({ title?, description, path, type? })` donne le titre, la description, la canonique et un `openGraph`/`twitter` **complet**. **Toute nouvelle page doit passer par lui** : Next remplace `openGraph` en entier à chaque segment, donc une page sans lui hérite de la carte de partage de l'accueil ;
+  - `personJsonLd()` produit le JSON-LD `WebSite` + `Person` de l'accueil (`sameAs` = GitHub et LinkedIn de `site.links`), injecté dans `src/app/page.tsx`.
+- `layout.tsx` : `metadataBase`, `authors`, `robots.googleBot` (aperçus larges), et les valeurs de partage par défaut. Pas de canonique ni d'`index` explicite, qui fuiraient sur la 404.
+- `public/og.jpg` (1200×630, 57 Ko) est statique. C'est un rendu HTML via Chrome headless (polices du site, fond aurora, « Mathys NOURRY », métier · Lyon, logo + `mnourry.dev`), exporté en JPG car WhatsApp ignore les images de plus de ~600 Ko. Il faut le régénérer si le nom, le métier ou le domaine change. Les fiches projet l'utilisent aussi, puisque leurs couvertures AVIF ne passent pas sur les réseaux.
+- Hors code (à faire par Mathys) : Search Console (domaine vérifié par TXT chez OVH, sitemap envoyé), Bing Webmaster Tools, liens vers `mnourry.dev` depuis LinkedIn et GitHub.
 
 ## Architecture
 - `src/app/layout.tsx` : polices, métadonnées (titres `%s - Mathys NOURRY`), viewport, et les éléments **persistants** entre les pages : `Background`, `Navbar`, `ScrollThumb`, `RevealGate`. Chaque `page.tsx` enveloppe son contenu dans `<PageTransition>` (React `<ViewTransition>` : fondu entre pages).

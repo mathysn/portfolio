@@ -3,10 +3,10 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 type CoverProps = {
-  /** Image path (e.g. /projets/atlas.png). Without it, the striped placeholder is shown. */
+  /** Image path (e.g. /projets/atlas.avif). Without it, the striped placeholder is shown. */
   src?: string;
   alt?: string;
-  /** Placeholder caption, e.g. "capture — atlas.png". */
+  /** Placeholder caption, e.g. "capture — atlas.avif". */
   label?: string;
   sizes?: string;
   priority?: boolean;
