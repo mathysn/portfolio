@@ -3,11 +3,10 @@ export const site = {
   name: "Mathys NOURRY",
   firstName: "Mathys",
   lastName: "NOURRY",
-  /** Marque affichée dans la nav. */
   brand: "mnourry.dev",
   role: "Développeur Full-Stack",
   description:
-    "Portfolio de Mathys NOURRY, développeur full-stack à Lyon : applications web, API et outils open source, du schéma de base de données à l'interface.",
+    "Je suis Mathys NOURRY, développeur Full-Stack passionné par la création d'applications. Découvrez mes projets et contactez-moi pour collaborer !",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
   email: "mathys.nourry@gmail.com",
   city: "Lyon, France",
