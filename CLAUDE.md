@@ -9,7 +9,7 @@ Portfolio personnel d'un développeur full-stack basé à Lyon (Mathys NOURRY), 
   - `/projets` : grille filtrable ;
   - `/projets/[slug]` : étude de cas en MDX ;
   - `/contact` : email (avec copie), GitHub, LinkedIn ;
-  - pages techniques : 404, `sitemap.xml`, `robots.txt`, favicon `src/app/icon.svg` (cercle vert, « M » tracé), `src/app/apple-icon.png` (180×180, « M » sur carré vert plein), image de partage `public/og.jpg`.
+  - pages techniques : 404, `sitemap.xml`, `robots.txt`, favicon `src/app/icon.svg` (cercle vert, « M » tracé), décliné en `favicon.ico` (16/32/48) et `icon1.png` (192px), rastérisés depuis le SVG avec `sharp` (à régénérer si le SVG change), `src/app/apple-icon.png` (180×180, « M » sur carré vert plein), image de partage `public/og.jpg`.
 - **Stack** : Next.js 16 App Router + Turbopack, React 19, MDX (`@next/mdx`), Tailwind CSS v4 (config CSS-first, pas de `tailwind.config`), TypeScript, pnpm, zod, lucide-react.
 - **Origine** : un handoff de design (`design_handoff_portfolio/README.md` + maquettes `.dc.html`, à ouvrir dans un navigateur). C'est la référence visuelle. Depuis, le site a évolué sur demande de Mathys : nav sans « Accueil », cartes simplifiées, grille chronologique, version mobile, ni CV ni formulaire de contact (retirés : on le contacte par email, GitHub ou LinkedIn).
 - **Contenu** : projets réels `mrveto` et `where-are-trail-ruins`. Les placeholders hérités du design ont tous été retirés. Les nouvelles fiches se génèrent avec `docs/prompt-projet-mdx.md`. Une capture reste un placeholder rayé tant que `cover`/`src` n'est pas fourni.
@@ -188,5 +188,6 @@ But : une recherche « Mathys Nourry » doit faire remonter le site, le LinkedIn
 - Plugins MDX dans `next.config.ts` : en chaînes de caractères avec des options sérialisables (exigence Turbopack). Le thème Shiki est lu en JSON via `fs`.
 - L'intro de l'accueil translate le footer sous le pli. Le conteneur est donc en `overflow-clip` pour ne pas rendre la page scrollable, et `ScrollThumb` se recalcule aussi sur `animationend`/`transitionend`.
 - MDX : échapper `<` et `{` dans le texte. Pas d'`import` dans les fiches (les composants sont globaux).
+- Favicon dans Google : un `icon.svg` seul ne suffit pas, Google affichait le globe par défaut. Garder `favicon.ico` et un PNG carré multiple de 48px (`icon1.png`). Pour voir ce que Google a en cache : `https://www.google.com/s2/favicons?domain=mnourry.dev&sz=64`.
 - Images d'un projet : dans `public/projets/<slug>/`, jamais à côté du `.mdx` dans `content/projets/<slug>/`. Next ne sert que `public/`, donc une image rangée dans `content/` donne une 404 et un cadre vide, sans erreur au build.
 - En `pnpm dev` seulement, l'onglet affiche l'URL pendant environ 0,5 s à chaque navigation. Le `<title>` arrive en streaming après la page, et React ne l'insère qu'à la fin de la view transition `page-in`. En prod (`pnpm build && pnpm start`), les pages préchargées arrivent d'un bloc et le titre change sans trou. Ne rien corriger : `htmlLimitedBots: /.*/` a été essayé et ne change rien en dev.
