@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Instrument_Serif, Rubik } from "next/font/google";
 import { Background } from "@/components/layout/Background";
@@ -62,12 +63,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           Aller au contenu
         </a>
-        {/* Persistent across navigations: only page content transitions. */}
         <Background />
         <Navbar />
         {children}
         <ScrollThumb />
         <RevealGate />
+        <Analytics />
       </body>
     </html>
   );

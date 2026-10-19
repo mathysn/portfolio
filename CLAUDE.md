@@ -10,7 +10,7 @@ Portfolio personnel d'un développeur full-stack basé à Lyon (Mathys NOURRY), 
   - `/projets/[slug]` : étude de cas en MDX ;
   - `/contact` : email (avec copie), GitHub, LinkedIn ;
   - pages techniques : 404, `sitemap.xml`, `robots.txt`, favicon `src/app/icon.svg` (cercle vert, « M » tracé), décliné en `favicon.ico` (16/32/48) et `icon1.png` (192px), rastérisés depuis le SVG avec `sharp` (à régénérer si le SVG change), `src/app/apple-icon.png` (180×180, « M » sur carré vert plein), image de partage `public/og.jpg`.
-- **Stack** : Next.js 16 App Router + Turbopack, React 19, MDX (`@next/mdx`), Tailwind CSS v4 (config CSS-first, pas de `tailwind.config`), TypeScript, pnpm, zod, lucide-react.
+- **Stack** : Next.js 16 App Router + Turbopack, React 19, MDX (`@next/mdx`), Tailwind CSS v4 (config CSS-first, pas de `tailwind.config`), TypeScript, pnpm, zod, lucide-react, `@vercel/analytics`.
 - **Origine** : un handoff de design (`design_handoff_portfolio/README.md` + maquettes `.dc.html`, à ouvrir dans un navigateur). C'est la référence visuelle. Depuis, le site a évolué sur demande de Mathys : nav sans « Accueil », cartes simplifiées, grille chronologique, version mobile, ni CV ni formulaire de contact (retirés : on le contacte par email, GitHub ou LinkedIn).
 - **Contenu** : projets réels `mrveto` et `where-are-trail-ruins`. Les placeholders hérités du design ont tous été retirés. Les nouvelles fiches se génèrent avec `docs/prompt-projet-mdx.md`. Une capture reste un placeholder rayé tant que `cover`/`src` n'est pas fourni.
 
@@ -30,6 +30,7 @@ Portfolio personnel d'un développeur full-stack basé à Lyon (Mathys NOURRY), 
 
   `www` redirige en 308 vers l'apex.
 - Seule variable d'environnement sur Vercel : `NEXT_PUBLIC_SITE_URL=https://mnourry.dev`, à créer en type **Config** et pas Secret (un préfixe `NEXT_PUBLIC_` est refusé en Secret). Elle est figée au build : après un changement, il faut un Redeploy.
+- **Web Analytics** : composant `<Analytics />` de `@vercel/analytics/next` dans `layout.tsx`. Il n'envoie rien en local ; en production, il faut que l'onglet Analytics soit activé sur le projet Vercel, sinon `/_vercel/insights/script.js` renvoie une 404.
 - **Tenir ce fichier à jour** : après chaque changement important (nouvelle page ou section, nouveau composant ou hook, changement d'identité visuelle, de structure, de convention ou de schéma du frontmatter, nouveau piège découvert), mets à jour la section concernée de ce CLAUDE.md dans la même tâche, sans attendre qu'on le demande. Retire ce qui n'est plus vrai.
 
 ## Identité visuelle (« verre trempé »)
@@ -116,7 +117,7 @@ But : une recherche « Mathys Nourry » doit faire remonter le site, le LinkedIn
 - Hors code (à faire par Mathys) : Search Console (domaine vérifié par TXT chez OVH, sitemap envoyé), Bing Webmaster Tools, liens vers `mnourry.dev` depuis LinkedIn et GitHub.
 
 ## Architecture
-- `src/app/layout.tsx` : polices, métadonnées (titres `%s - Mathys NOURRY`), viewport, et les éléments **persistants** entre les pages : `Background`, `Navbar`, `ScrollThumb`, `RevealGate`. Chaque `page.tsx` enveloppe son contenu dans `<PageTransition>` (React `<ViewTransition>` : fondu entre pages).
+- `src/app/layout.tsx` : polices, métadonnées (titres `%s - Mathys NOURRY`), viewport, et les éléments **persistants** entre les pages : `Background`, `Navbar`, `ScrollThumb`, `RevealGate`, `Analytics` (Vercel Web Analytics, à la fin du `<body>`). Chaque `page.tsx` enveloppe son contenu dans `<PageTransition>` (React `<ViewTransition>` : fondu entre pages).
 - `src/app/projets/[slug]/page.tsx` : importe `@content/projets/${slug}.mdx` (alias `@content/*` dans tsconfig), `generateStaticParams`, `dynamicParams = false`.
 - `src/mdx-components.tsx` (dans `src/`, requis par `@next/mdx`) :
   - mapping Markdown (liens, code inline, blockquote) ;
